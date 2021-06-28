@@ -1,0 +1,320 @@
+#include<iostream>
+using namespace std;
+
+//класс вещественная матрица
+class FloatMatrix
+{
+protected:
+	int C_col;
+	int C_str;
+	float** matrix;
+public:
+
+	FloatMatrix(const int strings = 0, const int columns = 0)
+	{
+		if (columns > 0 || strings > 0)
+		{
+			C_col = columns;
+			C_str = strings;
+
+			matrix = new float* [C_str];
+			for (size_t i = 0; i < C_str; i++)
+				matrix[i] = new float[C_col];
+
+			for (size_t i = 0; i < C_str; i++)
+				for (size_t j = 0; j < C_col; j++)
+					matrix[i][j] = 0;
+		}
+		else
+		{
+			C_col = C_str = 0;
+			matrix = nullptr;
+		}
+	}
+
+	FloatMatrix(const FloatMatrix& M)
+	{
+		C_col = M.C_col;
+		C_str = M.C_str;
+
+		matrix = new float* [C_str];
+		for (size_t i = 0; i < C_str; i++)
+			matrix[i] = new float[C_col];
+
+		for (size_t i = 0; i < C_str; i++)
+			for (size_t j = 0; j < C_col; j++)
+				matrix[i][j] = M.matrix[i][j];
+	}
+	void operator+=(const FloatMatrix& m)
+	{
+		for (size_t i = 0; i < C_str; i++)
+			for (size_t j = 0; j < C_col; j++)
+				matrix[i][j] += m.matrix[i][j];
+	}
+	void operator-=(const FloatMatrix& m)
+	{
+		for (size_t i = 0; i < C_str; i++)
+			for (size_t j = 0; j < C_col; j++)
+				matrix[i][j] -= m.matrix[i][j];
+	}
+	FloatMatrix& operator*(const FloatMatrix& m)
+	{
+		FloatMatrix c(m.C_str, m.C_col);
+		for (size_t i = 0; i < C_str; i++)
+		{
+			for (size_t j = 0; j < m.C_col; j++)
+			{
+				c.matrix[i][j] = 0;
+				for (size_t k = 0; k < C_col; k++)
+				{
+					c.matrix[i][j] += matrix[i][k] * m.matrix[k][j];
+				}
+			}
+		}
+		return c;
+	}
+	void operator=(const FloatMatrix& M)
+	{
+		C_col = M.C_col;
+		C_str = M.C_str;
+	
+		matrix = new float* [C_str];
+		for (size_t i = 0; i < C_str; i++)
+			matrix[i] = new float[C_col];
+
+		for (size_t i = 0; i < C_str; i++)
+			for (size_t j = 0; j < C_col; j++)
+				matrix[i][j] = M.matrix[i][j];
+	
+	}
+
+	bool operator==(const FloatMatrix& m)
+	{
+		for (size_t i = 0; i < C_str; i++)
+			for (size_t j = 0; j < C_col; j++)
+				if (matrix[i][j] != m.matrix[i][j])
+				{
+					return false;
+				}
+		return true;
+
+	}
+	bool operator!=(const FloatMatrix& m)
+	{
+		for (size_t i = 0; i < C_str; i++)
+			for (size_t j = 0; j < C_col; j++)
+				if (matrix[i][j] != m.matrix[i][j])
+				{
+					return true;
+				}
+		return false;
+
+
+	}
+	friend istream& operator>>(istream& is, const FloatMatrix& m)
+	{
+		cout << "Enter elements of matrix" << endl;
+		for (size_t i = 0; i < m.C_str; i++)
+			for (size_t j = 0; j < m.C_col; j++)
+				is >> m.matrix[i][j];
+		cout << "the matrix was filled" << endl;
+		return is;
+
+	}
+	friend ostream& operator<<(ostream& os, const FloatMatrix& m)
+	{
+		for (size_t i = 0; i < m.C_str; i++)
+		{
+
+			for (size_t j = 0; j < m.C_col; j++)
+				os << "|" << m.matrix[i][j] << "|" << "  ";
+			os << "\t\n";
+		}
+		return os;
+
+	}
+	void RandM()
+	{
+		for (size_t i = 0; i < C_str; i++)
+			for (size_t j = 0; j < C_col; j++)
+				matrix[i][j] = rand() % 10;
+	}
+	~FloatMatrix()
+	{
+
+		for (int i = 0; i < C_str; i++)
+			delete[]matrix[i];
+		delete[]matrix;
+	}
+
+};
+
+
+
+
+//класс квадратная матрица (наследование)
+class QMatrix :public FloatMatrix
+{
+public:
+	//конструктор с параметрами 
+	QMatrix(int n1) :FloatMatrix(n1, n1)
+	{
+		C_col = n1;
+		C_str = n1;
+		matrix = new float* [C_str];
+		for (int i = 0; i < C_str; i++)
+		{
+			matrix[i] = new float[C_col];
+		}
+		for (int i = 0; i < C_str; i++)
+		{
+			for (int j = 0; j < C_col; j++)
+			{
+				matrix[i][j] = 0.0;
+			}
+		}
+	}
+	QMatrix() :FloatMatrix() {}
+	QMatrix(FloatMatrix& ob) :FloatMatrix(ob) {}
+	//перегруженый оператор присваивания
+	QMatrix& operator= (FloatMatrix& ob)
+	{
+		FloatMatrix::operator=(ob);
+		return*this;
+	}
+	//выдиление подматрицы
+	QMatrix SubMatrix(int i1, int j1)
+	{
+		QMatrix temp(C_str - 1);
+		for (int i = 0; i < i1; i++)
+		{
+			for (int j = 0; j < j1; j++)
+			{
+				temp.matrix[i][j] = matrix[i][j];
+			}
+			for (int j = j1 + 1; j < C_str; j++)
+			{
+				temp.matrix[i][j - 1] = matrix[i][j];
+			}
+		}
+		for (int i = i1 + 1; i < C_str; i++)
+		{
+			for (int j = 0; j < j1; j++)
+			{
+				temp.matrix[i - 1][j] = matrix[i][j];
+			}
+			for (int j = j1 + 1; j < C_str; j++)
+			{
+				temp.matrix[i - 1][j - 1] = matrix[i][j];
+			}
+		}
+		return temp;
+	}
+	//вычисление определителя
+	float Determinant()
+	{
+		float det = 0;
+		if (C_str == 1)
+		{
+			return matrix[0][0];
+		}
+		QMatrix temp(C_str - 1);
+		for (int j = 0; j < C_str; j++)
+		{
+			temp = SubMatrix(0, j);
+			if (j % 2 == 0)
+			{
+				det += temp.Determinant() * matrix[0][j];
+			}
+			else
+			{
+				det -= temp.Determinant() * matrix[0][j];
+			}
+		}
+		return det;
+	}
+	//создание обратной матрицы
+	QMatrix operator ~()
+	{
+		QMatrix res(C_str);
+		float det = Determinant();
+		if (det == 0)
+		{
+			cout << "I'can't do it" << endl;
+		}
+		QMatrix temp(C_str - 1);
+		int z;
+		for (int i = 0; i < C_str; i++)
+		{
+			z = i % 2 == 0 ? 1 : -1;
+			for (int j = 0; j < C_col; j++)
+			{
+				temp = SubMatrix(i, j);
+				res.matrix[j][i] = z * temp.Determinant() / det;
+				z = -z;
+			}
+		}
+		return res;
+	}
+	//возведение в степень
+	void PowM(const int n) {
+		if (C_col != C_str)
+		{
+			cout << "I'can't do it" << endl;
+			return;
+		}
+		else
+		{
+			QMatrix c(C_str);
+			for (int s = 1;s < n; s++)
+			{
+				
+
+				for (size_t i = 0; i < C_str; i++)
+				{
+					for (size_t j = 0; j < C_col; j++)
+					{
+						c.matrix[i][j] = 0;
+						for (size_t k = 0; k < C_col; k++)
+						{
+							c.matrix[i][j] += matrix[i][k] * matrix[k][j];
+						}
+					}
+				}
+			}
+			*this = c;
+
+			
+			
+		}
+
+
+
+	}
+	//транспонирование матрицы
+	void Transp()
+	{
+		QMatrix Res(C_str);
+		Res.C_str = C_col;
+		Res.C_col = C_str;
+		float s;
+		for (int i = 0; i < C_str; i++)
+			for (int j = 0; j < C_col; j++)
+			{
+				Res.matrix[i][j] = matrix[j][i];
+			}
+		*this = Res;
+	}
+};
+
+
+int main()
+{
+	QMatrix A(2);
+	A.RandM();
+	cout << A << endl;
+	A.PowM(2);
+	cout << A << endl;
+	system("pause");
+}
+

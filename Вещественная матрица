@@ -1,0 +1,175 @@
+#include <iostream>
+
+using namespace std;
+
+class FloatMatrix
+{
+	int C_col;
+	int C_str;
+	float **matrix;
+public:
+
+	FloatMatrix(const int strings = 0, const int columns = 0)
+	{
+		if (columns > 0 || strings > 0)
+		{
+			C_col = columns;
+			C_str = strings;
+
+			matrix = new float*[C_str];
+			for (size_t i = 0; i < C_str; i++)
+				matrix[i] = new float[C_col];
+
+			for (size_t i = 0; i < C_str; i++)
+				for (size_t j = 0; j < C_col; j++)
+					matrix[i][j] = 0;
+		}
+		else
+		{
+			C_col = C_str = 0;
+			matrix = nullptr;
+		}
+	}
+
+	FloatMatrix(const FloatMatrix& M)
+	{
+		C_col = M.C_col;
+		C_str = M.C_str;
+
+		matrix = new float*[C_str];
+		for (size_t i = 0; i < C_str; i++)
+			matrix[i] = new float[C_col];
+
+		for (size_t i = 0; i < C_str; i++)
+			for (size_t j = 0; j < C_col; j++)
+				matrix[i][j] = M.matrix[i][j];
+	}
+	void operator+=(const FloatMatrix& m)
+	{
+		for (size_t i = 0; i < C_str; i++)
+			for (size_t j = 0; j < C_col; j++)
+				matrix[i][j] += m.matrix[i][j];
+	}
+	void operator-=(const FloatMatrix& m)
+	{
+		for (size_t i = 0; i < C_str; i++)
+			for (size_t j = 0; j < C_col; j++)
+				matrix[i][j] -= m.matrix[i][j];
+	}
+	FloatMatrix operator*(const FloatMatrix& m)
+	{
+		FloatMatrix c(m.C_col, C_str);
+		for (size_t i = 0; i < C_str; i++)
+		{
+			for (size_t j = 0; j < m.C_col; j++)
+			{
+				c.matrix[i][j] = 0;
+				for (size_t k = 0; k < C_col; k++)
+				{
+					c.matrix[i][j] += matrix[i][k] * m.matrix[k][j];
+				}
+			}
+		}
+		return c;
+	}
+	void operator=(const FloatMatrix& M)
+	{
+		C_col = M.C_col;
+		C_str = M.C_str;
+
+		matrix = new float*[C_str];
+		for (size_t i = 0; i < C_str; i++)
+			matrix[i] = new float[C_col];
+
+		for (size_t i = 0; i < C_str; i++)
+			for (size_t j = 0; j < C_col; j++)
+				matrix[i][j] = M.matrix[i][j];
+	}
+	bool operator==(const FloatMatrix& m)
+	{
+		for (size_t i = 0; i < C_str; i++)
+			for (size_t j = 0; j < C_col; j++)
+				if (matrix[i][j] != m.matrix[i][j])
+				{
+					return false;
+				}
+		return true;
+
+	}
+	bool operator!=(const FloatMatrix& m)
+	{
+		for (size_t i = 0; i < C_str; i++)
+			for (size_t j = 0; j < C_col; j++)
+				if (matrix[i][j] != m.matrix[i][j])
+				{
+					return true;
+				}
+		return false;
+
+
+	}
+	friend istream& operator>>(istream& is, const FloatMatrix& m)
+	{
+		cout << "Enter elements of matrix" << endl;
+		for (size_t i = 0; i < m.C_str; i++)
+			for (size_t j = 0; j < m.C_col; j++)
+				is >> m.matrix[i][j];
+		cout << "the matrix was filled" << endl;
+		return is;
+
+	}
+	friend ostream& operator<<(ostream& os, const FloatMatrix& m)
+	{
+		for (size_t i = 0; i < m.C_str; i++)
+		{
+
+			for (size_t j = 0; j < m.C_col; j++)
+				os <<"|"<< m.matrix[i][j]<<"|" << "  ";
+			os <<"\t\n";
+		}
+		return os;
+
+	}
+	void RandM();
+
+	~FloatMatrix()
+	{
+
+		for (int i = 0; i < C_str; i++)
+			delete[]matrix[i];
+		delete[]matrix;
+	}
+
+};
+
+
+
+
+void FloatMatrix::RandM()
+{
+	for (size_t i = 0; i < C_str; i++)
+		for (size_t j = 0; j < C_col; j++)
+			matrix[i][j] = rand() % 10;
+}
+
+
+int main()
+{
+	FloatMatrix A(2, 2), B(2, 3), C(2, 2);
+
+	A.RandM();
+	B.RandM();
+	C.RandM();
+	cout << A << endl;
+	cout << B << endl;
+	cout << C << endl;
+	
+	A = A * B;
+	cout << A << endl;
+
+	cout << C << endl;
+
+	//  if (A != C)
+	//     cout << "a!=c" << endl;
+	system("pause");
+}

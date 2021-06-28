@@ -1,0 +1,176 @@
+include \masm32\include\masm32rt.inc
+
+.386
+
+.data?
+hout dd ?
+ns dd ?x3 dd ?
+x11 dd ?
+x13 dd ?
+x14 dd ?
+x16 dd ?
+x18 dd ?
+x24 dd ?
+x291 dd ?
+x292 dd ?
+x293 dd ?
+x294 dd ?
+x295 dd ?
+x296 dd ?
+x297 dd ?
+x298 dd ?
+x299 dd ?
+x300 dd ?
+x301 dd ?
+x302 dd ?
+x303 dd ?
+x304 dd ?
+x305 dd ?
+x306 dd ?
+x307 dd ?
+x308 dd ?
+
+.data
+x287 dd 101
+x288 dd 1
+x289 dd 10
+x290 dd 909
+
+.code
+start:
+label2:
+mov eax, x287
+mov x14, eax
+label11:
+mov eax, x288
+mov x16, eax
+label21:
+mov eax, x14
+add eax, x288
+mov x291, eax
+mov eax, x291
+mov x18, eax
+label41:
+mov eax, x18
+cmp eax, x16
+JGE label101
+label101:
+mov eax, x16
+imul eax, x289
+mov x292, eax
+mov eax, x292
+mov x16, eax
+label31:
+jmp label41
+label51:
+mov eax, x16
+cdq
+mov ebx, x289
+idiv ebx
+mov x293, eax
+mov eax, x293
+mov x16, eax
+label61:
+mov eax, x18
+cdq
+mov ebx, x16
+idiv ebx
+mov x294, eax
+mov eax, x294
+mov x11, eax
+label71:
+mov eax, x11
+imul eax, x16
+mov x296, eax
+mov eax, x18
+sub eax, x296
+mov x295, eax
+mov eax, x295
+mov x24, eax
+label81:
+mov eax, x11
+add eax, x288
+mov x297, eax
+mov eax, x297
+mov x11, eax
+label91:
+mov eax, x11
+imul eax, x16
+mov x298, eax
+mov eax, x298
+add eax, x24
+mov x299, eax
+mov eax, x299
+mov x18, eax
+label102:
+mov eax, x290
+mov x13, eax
+label12:
+mov eax, x288
+mov x16, eax
+label13:
+mov eax, x13
+add eax, x288
+mov x300, eax
+mov eax, x300
+mov x3, eax
+label14:
+mov eax, x3
+cmp eax, x16
+JGE label103
+label103:
+mov eax, x16
+imul eax, x289
+mov x301, eax
+mov eax, x301
+mov x16, eax
+label104:
+jmp label14
+label15:
+mov eax, x16
+cdq
+mov ebx, x289
+idiv ebx
+mov x302, eax
+mov eax, x302
+mov x16, eax
+label16:
+mov eax, x3
+cdq
+mov ebx, x16
+idiv ebx
+mov x303, eax
+mov eax, x303
+mov x11, eax
+label17:
+mov eax, x11
+imul eax, x16
+mov x305, eax
+mov eax, x3
+sub eax, x305
+mov x304, eax
+mov eax, x304
+mov x24, eax
+label18:
+mov eax, x11
+add eax, x288
+mov x306, eax
+mov eax, x306
+mov x11, eax
+label19:
+mov eax, x11
+imul eax, x16
+mov x307, eax
+mov eax, x307
+add eax, x24
+mov x308, eax
+mov eax, x308
+mov x3, eax
+label1:
+invoke GetStdHandle, STD_OUTPUT_HANDLE
+mov hout, eax
+invoke WriteConsole, hout, str$(x18), size x18, offset ns, NULL
+invoke GetStdHandle, STD_OUTPUT_HANDLE
+mov hout, eax
+invoke WriteConsole, hout, str$(x3), size x3, offset ns, NULL
+end start

@@ -1,0 +1,146 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream> 
+
+using namespace std;
+
+const int N = 5;
+class employee
+{
+public:
+
+	char name[80];
+	char dateofbirth[11];
+	char dateofemployment[11];
+	char position[80];
+	int salary;
+
+	employee()
+	{
+		name[0] = '\0';
+		dateofbirth[0] = '\0';
+		dateofemployment[0] = '\0';
+		position[0] = '\0';
+		salary = 0;
+	}
+	employee(const char* n, const char* dob, const char* doe, const char* p, int s)
+	{
+		strcpy(name, n);
+		strcpy(dateofbirth, dob);
+		strcpy(dateofemployment, doe);
+		strcpy(position, p);
+		salary = s;
+	}
+	void print()
+	{
+		cout << name << " | " << dateofbirth << " | " << dateofemployment << " | " << position << " | " << salary << endl;
+	}
+};
+
+
+int funcs(int n, employee* e, char**b, int &k, int date = 2020)
+{
+	int y;
+	char year[11];
+	int s = 0;
+	k = 0;
+	for (int i = 0; i < n; i++)
+	{
+		strcpy(year, e[i].dateofemployment);
+		y = (year[6] - 48) * 1000 + (year[7] - 48) * 100 + (year[8] - 48) * 10 + (year[9] - 48);
+		if (date - y >= 25)
+		{
+			strcpy(b[k++], e[i].name);
+			s += e[i].salary;
+		}
+	}
+	s = s / k;
+	return s;
+
+}
+
+
+int Zapoln(const char*nameT, employee *e1)
+{
+	FILE*f;
+if ((f = fopen(nameT, "r")) == NULL)
+{
+	cout << "Cann't open";
+	return 1;
+
+}
+else
+{
+	int i = 0;
+	while (!feof(f))
+	{
+		char n[80];
+		char cpy[80];
+		char dob[11];
+		char doe[11];
+		char p[80];
+		int s;
+
+		fscanf(f, "%s", n);
+		fscanf(f, "%s", cpy);
+		strcat(n, " ");
+		strcat(n, cpy);
+		strcat(n, " ");
+		fscanf(f, "%s", cpy);
+		strcat(n, cpy);
+		fscanf(f, "%s", dob);
+		fscanf(f, "%s", doe);
+		fscanf(f, "%s", p);
+		fscanf(f, "%d", &s);
+		strcpy(e1[i].name, n);
+		strcpy(e1[i].dateofbirth, dob);
+		strcpy(e1[i].dateofemployment, doe);
+		strcpy(e1[i].position, p);
+		e1[i].salary = s;
+		i++;
+	}
+	fclose(f);
+	return 0;
+}
+}
+
+int main()
+{
+	int sr_oklad = 0;
+	int k;
+	employee e1[N];
+	char nameT[] = "Text.txt";
+	char** b;
+	b = new char*[N];
+
+	if(Zapoln(nameT, e1)==0)
+		cout<<"Baza sozdana i zapolnena"<<endl;
+	puts("---------------- BAZA SOTRUDNIKOV --------------------");
+	for (int i = 0; i < N; i++)
+	{
+		e1[i].print();
+	}
+	cout << endl;
+
+	for (int i = 0; i < N; i++)
+	{
+		b[i] = new char[80];
+	}
+	sr_oklad = funcs(N, e1, b, k);
+	puts("------------ SOTRUDNIKI SO STAZEM >= 25 -------------------");
+	for (int i = 0; i < k; i++)
+	{
+		cout << b[i] << endl;
+	}
+	cout << "	sr_oklad = " << sr_oklad << endl;
+
+	system("pause");
+}
+
+
+
+
+Aliev I M 20.04.2002 21.09.2019 admin 10000
+Sazinov H M 15.05.1990 28.03.2015 coder 80000
+Ivanov M S 23.08.1989 01.03.2001 admin 60000
+Simonov K L 02.04.1999 05.12.1990 proger 15000
+Rimonov S A 09.07.1980 07.06.1995 teacher 10000
